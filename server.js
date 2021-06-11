@@ -1,5 +1,5 @@
 // Setup empty JS object to act as endpoint for all routes
-projectData = {};
+let projectData = {};
 
 // Require Express to run server and routes
 const express = require('express');
@@ -17,7 +17,19 @@ app.use(bodyParser.json());
 
 // Initialize the main project folder
 app.use(express.static('website'));
-
+app.get("/data", function (request, result) {
+  result.send(projectData);
+});
+app.post("/data", function (request, result) {
+  projectData = {
+    temperature: request.body.temperature,
+    date: request.body.date,
+    userResponse: request.body.userResponse
+  }
+  console.log("New projectData");
+  console.log(projectData);
+  result.send();
+});
 
 // Setup Server
 port = 7661;
