@@ -5,7 +5,7 @@ const serverUrl = "http://localhost:7661"
 
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = d.getMonth()+1+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 document.getElementById('generate').addEventListener('click', updateJournal);
 
@@ -18,7 +18,7 @@ async function updateJournal(event) {
 
 const getWeather = async (url, zip, apiKey)=>{
     try {
-        response = await axios.get(url + "?zip=" + zip + "&appid=" + apiKey);
+        response = await axios.get(url + "?zip=" + zip + "&appid=" + apiKey + "&units=imperial");
     } catch (error) {
         console.log("Error querying weather api", error);
     }
