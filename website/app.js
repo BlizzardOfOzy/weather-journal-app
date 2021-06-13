@@ -6,57 +6,49 @@ const serverUrl = "http://localhost:7661"
 // Create a new date instance dynamically with JS
 let d = new Date();
 let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
-let data = {}
 
 document.getElementById('generate').addEventListener('click', updateJournal);
 
-function updateJournal(event) {
+async function updateJournal(event) {
     let zip = document.getElementById('zip').value;
     getWeather(weatherUrl, zip, apiKey)
-    .then(
-        updateServer("/data", data)
-        )
-    .then(
-        updateWebPage("/data")
-    );
+    .then(data => updateServer("/data", data))
+    .then(result => updateWebPage("/data"));
 }
 
 const getWeather = async (url, zip, apiKey)=>{
-    const response = await fetch(url + "?zip=" + zip + "&appid=" + apiKey);
     try {
-        data = await response.json();
-        console.log(data);
+        response = await axios.get(url + "?zip=" + zip + "&appid=" + apiKey);
+    } catch (error) {
+        console.log("Error querying weather api", error);
     }
-    catch {
-        console.log("Error occured", error);
-    }
+    const data = response.data;
+    console.log(data);
+    return data;
 }
 
-const updateServer = async (path, weatherData)=>{
+const updateServer = (path, weatherData)=>{
     const url = serverUrl + path;
-
     try {
-        await fetch(url, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        axios.post(url, 
+            {
                 temperature: weatherData.main.temp,
                 date: newDate,
                 userResponse: document.getElementById('feelings').value,
-            }),
-        });
+            },
+            {
+                credentials: 'same-origin',
+            });
     } catch(error) {
         console.log("Error on post", error);
     }
+    return;
 }
 
 const updateWebPage = async (path)=>{
-    const response = await fetch(serverUrl + path);
     try {
-        const updateData = await response.json();
+        const response = await axios.get(serverUrl + path);
+        const updateData = response.data;
         document.getElementById('date').innerHTML = updateData.date;
         document.getElementById('temp').innerHTML = updateData.temperature;
         document.getElementById('content').innerHTML = updateData.userResponse;
