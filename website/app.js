@@ -13,7 +13,7 @@ async function updateJournal(event) {
     let zip = document.getElementById('zip').value;
     getWeather(weatherUrl, zip, apiKey)
     .then(data => updateServer("/data", data))
-    .then(result => updateWebPage("/data"));
+    .then(() => updateWebPage("/data"));
 }
 
 const getWeather = async (url, zip, apiKey)=>{
